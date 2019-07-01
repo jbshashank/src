@@ -38,16 +38,16 @@ public class EmailTicketLoggedFormatter implements IMessageFormatter{
 		// TODO Auto-generated method stub
 		String formattedMessage = ""+messageExpression;
 		if(messageProperties.containsKey("$serviceRequest")) {
-			formattedMessage = formattedMessage.replaceAll("$serviceRequest", ""+messageProperties.get("$serviceRequest"));
+			formattedMessage = formattedMessage.replaceAll("#serviceRequest", ""+messageProperties.get("$serviceRequest"));
 		}
 		if(messageProperties.containsKey("$serviceEngineer")) {
-			formattedMessage = formattedMessage.replaceAll("$serviceEngineer", ""+messageProperties.get("$serviceEngineer"));
+			formattedMessage = formattedMessage.replaceAll("#serviceEngineer", ""+messageProperties.get("$serviceEngineer"));
 		}
 		if(messageProperties.containsKey("$OTP")) {
-			formattedMessage = formattedMessage.replaceAll("$OTP", ""+messageProperties.get("$OTP"));
+			formattedMessage = formattedMessage.replaceAll("#OTP", ""+messageProperties.get("$OTP"));
 		}
 		if(messageProperties.containsKey("$Customer")) {
-			formattedMessage = formattedMessage.replaceAll("$Customer", ""+messageProperties.get("$Customer"));
+			formattedMessage = formattedMessage.replaceAll("#Customer", ""+messageProperties.get("$Customer"));
 		}
 		messageProperties.put("MESSAGE",""+formattedMessage);
 		return "SUCCESS";

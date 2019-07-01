@@ -9,7 +9,7 @@ import com.ayushya.spring.bean.Tickets;
 public interface TicketService {
 	public void createTicket(List<Tickets> ticket);
 
-	public List<Technician> getEmployeeData(List<Technician> sE);
+	public String getEmployeeData(Tickets ticket);
 
 	public Tickets updateTicketStatus(String ticket_id, String status);
 

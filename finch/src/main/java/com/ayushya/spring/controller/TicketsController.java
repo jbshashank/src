@@ -15,6 +15,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -123,36 +124,18 @@ public class TicketsController
 	{
 		tick.set_id(nextSequenceService.getNextSequence("customSequences",
 				new SimpleDateFormat("ddMMyy").format(new Date())));
-		tick.setTicket_status("Open");
+		tick.setTicket_status("created");
 		tick.setDate_of_post(new SimpleDateFormat("ddMMyyhhmmss").format(new Date()));
-//		List<technician> data = ticketService.getEmployeeData(SE);
-//		String id = new AssignService().assignTicket(data, tick.getCity());
-//
-//		if (id != null)
-//		{
-//			tick.setTech_name(id);
-//			technician tech = new technician();
-//			tech = technicianRepository.findOne(id);
-//			tech.setNo_assigned(technicianRepository.findOne(id)
-//					.getNo_assigned()
-//					+ 1);
-//			technicianRepository.save(tech);
-//		}
-//		String visitDate = "12-12-2019";
-//		String visitTime = "10:05 AM";
-//		// Conversion
-//		Date sourceDate = new SimpleDateFormat("mm-dd-yyyy:hh:mm a").parse(visitDate+":"+visitTime);
-//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
-//		String text = sdf.format(sourceDate);
+		tick.setTech_name(ticketService.getEmployeeData(tick));
 		repository.save(tick);
 		return tick;
 	}
 
 	@RequestMapping(value = "/ticket/{ticket_id}/{status}", method = RequestMethod.PUT)
-	public Tickets updateTicketStatus(@PathVariable String ticket_id,@PathVariable String status)
+	public ResponseEntity<Tickets> updateTicketStatus(@PathVariable String ticket_id,@PathVariable String status)
 	{
-		return ticketService.updateTicketStatus(ticket_id,status);
+		Tickets t = ticketService.updateTicketStatus(ticket_id,status);
+		return ResponseEntity.accepted().body(t);
 	}
 
 	@RequestMapping(value = "/{_id}", method = RequestMethod.PUT)

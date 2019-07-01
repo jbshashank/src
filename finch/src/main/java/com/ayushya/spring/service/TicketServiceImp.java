@@ -1,5 +1,6 @@
 package com.ayushya.spring.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -32,32 +33,38 @@ public class TicketServiceImp implements TicketService {
 	@Autowired
 	NotificationSender notificationSender;
 	
+	@Autowired
+	OTPService oTPService;
+	
 	@Override
 	public void createTicket(List<Tickets> ticket) {
 		// TODO Auto-generated method stub
 		ticketRepository.save(ticket);
 	}
 
+	public String getEmployeeData(Tickets ticket) {
+		List<Technician> technicianList = getEmployeeDataFromService();
+		for(Technician t:technicianList)
+			if(t.pin_code.equals(ticket.pin_code)) return t.seName;
+		return null;
+	}
 	@Cacheable("technicians")
-	public List<Technician> getEmployeeData(List<Technician> sE) {
+	public List<Technician> getEmployeeDataFromService() {
+		List<Technician> technicianList = new ArrayList<Technician>();
 		JSONArray jsonarray = new JSONArray(new RestTemplate().getForObject("https://services-1.finchtech.in/Employee/user/get", String.class));
 		for(int i=0; i<jsonarray.length(); i++){
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 	        org.json.JSONObject obj = jsonarray.getJSONObject(i).getJSONObject("employeePersonalDetails");
 	        Technician Se = new Technician();
 	        Se.set_id(jsonarray.getJSONObject(i).getString("id"));
+	        Se.setSeName(obj.getString("empFirstName")+" "+obj.getString("empLastName"));
 	        Se.setCity(obj.getString("city"));
 	        Se.setPin_code(obj.getString("pincode"));
 	        Se.setLevel_of_expertise(obj.getString("expertiesLevel"));
 	        Se.setAddress(obj.getString("address"));
-	        sE.add(Se); 
+	        technicianList.add(Se);
 	        technicianRepository.save(Se);
 	    }
+		
 		return technicianRepository.findAll(); 
 	}
 
@@ -138,6 +145,7 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
 
     		hashMapEmailProps.put("TO", t.getEmail_id());
     		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+    		hashMapEmailProps.put("$Customer", t.getName());
     		hashMapEmailProps.put("$serviceEngineer", t.getTech_name());
     		hashMapEmailProps.put("SUBJECT", "testing");
 			notificationSender.notify(hashMapEmailProps, "email", "emailTicketLoggedFormatter_ticketcreated");
@@ -146,12 +154,16 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
         case "started": 
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+        	hashMapMessageProps.put("$Customer", t.getName());
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
-    		hashMapMessageProps.put("$OTP", "999999");
-    		notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketopened");
+    		String OTP_NUMBER_started = oTPService.addOtp(t.get_id(),"start_otp");
+    		hashMapMessageProps.put("$OTP", OTP_NUMBER_started);
+    		//notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketopened");
     		
     		hashMapEmailProps.put("TO", t.getEmail_id());
     		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+    		hashMapEmailProps.put("$Customer", t.getName());
+    		hashMapEmailProps.put("$OTP", OTP_NUMBER_started);
     		hashMapEmailProps.put("$serviceEngineer", t.getTech_name());
     		hashMapEmailProps.put("SUBJECT", "testing");
 			notificationSender.notify(hashMapEmailProps, "email", "emailTicketLoggedFormatter_ticketopened");
@@ -160,6 +172,7 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
         case "customer_na": 
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+    		hashMapMessageProps.put("$Customer", t.getName());
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
     		notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_customernotavailable");
             break; 
@@ -168,6 +181,9 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
+    		hashMapMessageProps.put("$Customer", t.getName());
+    		String OTP_NUMBER_estimate_approval = oTPService.addOtp(t.get_id(),"estimate_approval");
+    		hashMapMessageProps.put("$OTP", OTP_NUMBER_estimate_approval);
     		notificationSender.notify(hashMapEmailProps, "sms", "smsTicketLoggedFormatter_estimateapproval");
             break; 
             
@@ -175,7 +191,9 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
-    		hashMapMessageProps.put("$OTP", "999999");
+    		hashMapMessageProps.put("$Customer", t.getName());
+    		String OTP_NUMBER_invoice_generated = oTPService.addOtp(t.get_id(),"end_otp");
+    		hashMapMessageProps.put("$OTP", OTP_NUMBER_invoice_generated);
     		notificationSender.notify(hashMapEmailProps, "sms", "smsTicketLoggedFormatter_invoicegenerated");
             break; 
             

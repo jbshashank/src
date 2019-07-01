@@ -6,6 +6,7 @@ public class Technician {
 
 	@Id
 	public String _id;
+	public String seName;
 	public String mobile_number;
 	public String address;
 	public String city;
@@ -18,10 +19,11 @@ public class Technician {
 		
 	}
 
-	public Technician(String _id, String mobile_number, String address, String city, String pin_code, String expert_in,
+	public Technician(String _id,String seName, String mobile_number, String address, String city, String pin_code, String expert_in,
 			String level_of_expertise, int no_assigned) {
 		super();
 		this._id = _id;
+		this.seName = seName;
 		this.mobile_number = mobile_number;
 		this.address = address;
 		this.city = city;
@@ -29,6 +31,14 @@ public class Technician {
 		this.expert_in = expert_in;
 		this.level_of_expertise = level_of_expertise;
 		this.no_assigned = no_assigned;
+	}
+
+	public String getSeName() {
+		return seName;
+	}
+
+	public void setSeName(String seName) {
+		this.seName = seName;
 	}
 
 	public String get_id() {

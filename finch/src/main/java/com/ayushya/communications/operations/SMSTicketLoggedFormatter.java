@@ -39,18 +39,18 @@ public class SMSTicketLoggedFormatter implements IMessageFormatter{
 		String formattedMessage = ""+messageExpression;
 		System.out.println(" THE MESSSSSSSSSSSSSSSSSSSSSSSSSSSSS "+messageProperties);
 		if(messageProperties.containsKey("$serviceRequest")) {
-			formattedMessage = formattedMessage.replace("$serviceRequest", ""+messageProperties.get("$serviceRequest"));
+			formattedMessage = formattedMessage.replace("#serviceRequest", ""+messageProperties.get("$serviceRequest"));
 			System.out.println(" THE MESSSSSSSSSSSSSSSSSSSSSSSSSSSSS <<<<11>>>"+formattedMessage);
 		}
 		if(messageProperties.containsKey("$serviceEngineer")) {
-			formattedMessage = formattedMessage.replace("$serviceEngineer", ""+messageProperties.get("$serviceEngineer"));
+			formattedMessage = formattedMessage.replace("#serviceEngineer", ""+messageProperties.get("$serviceEngineer"));
 			System.out.println(" THE MESSSSSSSSSSSSSSSSSSSSSSSSSSSSS <<<<2222222222>>>"+formattedMessage);
 		}
 		if(messageProperties.containsKey("$OTP")) {
-			formattedMessage = formattedMessage.replaceAll("$serviceEngineer", ""+messageProperties.get("$OTP"));
+			formattedMessage = formattedMessage.replaceAll("#serviceEngineer", ""+messageProperties.get("$OTP"));
 		}
 		if(messageProperties.containsKey("$Customer")) {
-			formattedMessage = formattedMessage.replaceAll("$serviceEngineer", ""+messageProperties.get("$Customer"));
+			formattedMessage = formattedMessage.replaceAll("#serviceEngineer", ""+messageProperties.get("$Customer"));
 		}
 		messageProperties.put("MESSAGE",""+formattedMessage);
 		return "SUCCESS";
