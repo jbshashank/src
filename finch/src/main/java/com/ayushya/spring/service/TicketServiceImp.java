@@ -42,21 +42,24 @@ public class TicketServiceImp implements TicketService {
 		ticketRepository.save(ticket);
 	}
 
-	public String getEmployeeData(Tickets ticket) {
+	public Technician getEmployeeData(Tickets ticket) {
 		List<Technician> technicianList = getEmployeeDataFromService();
 		for(Technician t:technicianList)
-			if(t.pin_code.equals(ticket.pin_code)) return t.seName;
+			if(t.pin_code.equals(ticket.pin_code)) return t;
 		return null;
 	}
 	@Cacheable("technicians")
 	public List<Technician> getEmployeeDataFromService() {
 		List<Technician> technicianList = new ArrayList<Technician>();
+		try {
 		JSONArray jsonarray = new JSONArray(new RestTemplate().getForObject("https://services-1.finchtech.in/Employee/user/get", String.class));
+		if(jsonarray!=null) {
 		for(int i=0; i<jsonarray.length(); i++){
 	        org.json.JSONObject obj = jsonarray.getJSONObject(i).getJSONObject("employeePersonalDetails");
 	        Technician Se = new Technician();
 	        Se.set_id(jsonarray.getJSONObject(i).getString("id"));
 	        Se.setSeName(obj.getString("empFirstName")+" "+obj.getString("empLastName"));
+	        Se.setSeUniqueId(obj.getString("empEmailAddress"));
 	        Se.setCity(obj.getString("city"));
 	        Se.setPin_code(obj.getString("pincode"));
 	        Se.setLevel_of_expertise(obj.getString("expertiesLevel"));
@@ -64,6 +67,11 @@ public class TicketServiceImp implements TicketService {
 	        technicianList.add(Se);
 	        technicianRepository.save(Se);
 	    }
+		}
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 		return technicianRepository.findAll(); 
 	}
@@ -151,14 +159,30 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
 			notificationSender.notify(hashMapEmailProps, "email", "emailTicketLoggedFormatter_ticketcreated");
             break; 
             
-        case "started": 
+        case "accepted": 	
+        	
+        	hashMapMessageProps.put("TO", t.getMobile_number_1());
+        	hashMapMessageProps.put("$Customer", t.getName());
+    		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+    		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
+    		//notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketcreated");
+
+    		hashMapEmailProps.put("TO", t.getEmail_id());
+    		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+    		hashMapEmailProps.put("$Customer", t.getName());
+    		hashMapEmailProps.put("$serviceEngineer", t.getTech_name());
+    		hashMapEmailProps.put("SUBJECT", "testing");
+			notificationSender.notify(hashMapEmailProps, "email", "emailTicketLoggedFormatter_ticketcreated");
+            break;
+            
+        case "in-progress": 
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
         	hashMapMessageProps.put("$Customer", t.getName());
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
     		String OTP_NUMBER_started = oTPService.addOtp(t.get_id(),"start_otp");
     		hashMapMessageProps.put("$OTP", OTP_NUMBER_started);
-    		//notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketopened");
+    		notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketopened");
     		
     		hashMapEmailProps.put("TO", t.getEmail_id());
     		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
@@ -169,15 +193,22 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
 			notificationSender.notify(hashMapEmailProps, "email", "emailTicketLoggedFormatter_ticketopened");
             break; 
             
-        case "customer_na": 
+        case "reschedule": 
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
     		hashMapMessageProps.put("$Customer", t.getName());
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
     		notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_customernotavailable");
+    		
+    		hashMapEmailProps.put("TO", "shashijb@gmail.com");
+    		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
+    		hashMapEmailProps.put("$Customer", t.getName());
+    		hashMapEmailProps.put("$serviceEngineer", t.getTech_name());
+    		hashMapEmailProps.put("SUBJECT", "testing");
+			notificationSender.notify(hashMapEmailProps, "email", "emailTicketLoggedFormatter_ticketopened");
             break; 
             
-        case "estimate_approval": 
+        case "estimated": 
         	hashMapMessageProps.put("TO", t.getMobile_number_1());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());

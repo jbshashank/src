@@ -7,6 +7,7 @@ public class Technician {
 	@Id
 	public String _id;
 	public String seName;
+	public String seUniqueId;
 	public String mobile_number;
 	public String address;
 	public String city;
@@ -19,11 +20,12 @@ public class Technician {
 		
 	}
 
-	public Technician(String _id,String seName, String mobile_number, String address, String city, String pin_code, String expert_in,
-			String level_of_expertise, int no_assigned) {
+	public Technician(String _id, String seName, String seUniqueId, String mobile_number, String address, String city,
+			String pin_code, String expert_in, String level_of_expertise, int no_assigned) {
 		super();
 		this._id = _id;
 		this.seName = seName;
+		this.seUniqueId = seUniqueId;
 		this.mobile_number = mobile_number;
 		this.address = address;
 		this.city = city;
@@ -31,6 +33,15 @@ public class Technician {
 		this.expert_in = expert_in;
 		this.level_of_expertise = level_of_expertise;
 		this.no_assigned = no_assigned;
+	}
+
+
+	public String getSeUniqueId() {
+		return seUniqueId;
+	}
+
+	public void setSeUniqueId(String seUniqueId) {
+		this.seUniqueId = seUniqueId;
 	}
 
 	public String getSeName() {
@@ -104,5 +115,6 @@ public class Technician {
 	public void setNo_assigned(int no_assigned) {
 		this.no_assigned = no_assigned;
 	}
+
 
 }

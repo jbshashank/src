@@ -46,11 +46,11 @@ public class DamagedReturnsController {
 		return damagedReturnService.addDamagedPartReturn(ticket_number,damagedReturns);
 	}
 	
-//	@PostMapping(value = "/damage/{ticket_number}")
-//	public ResponseEntity<byte[]> addDamagedPartReturn(@PathVariable String ticket_number,@RequestParam("DamagedReturns") String damagedReturns_json, @RequestParam("file") MultipartFile uploadfile) throws IOException {
-//		DamagedReturns damagedReturns  = new ObjectMapper().readValue(damagedReturns_json, DamagedReturns.class);	
-//		return damagedReturnService.addDamagedPartReturnImage(ticket_number,damagedReturns,uploadfile);
-//	}
+	@PostMapping(value = "/damage/{ticket_number}")
+	public ResponseEntity<byte[]> addDamagedPartReturn(@PathVariable String ticket_number,@RequestParam("DamagedReturns") String damagedReturns_json, @RequestParam("file") MultipartFile uploadfile) throws IOException {
+		DamagedReturns damagedReturns  = new ObjectMapper().readValue(damagedReturns_json, DamagedReturns.class);	
+		return damagedReturnService.addDamagedPartReturnImage(ticket_number,damagedReturns,uploadfile);
+	}
 	
 	@DeleteMapping(value = "/{ticket_number}")
 	public DamagedReturns RemoveDamagedPartReturn(@PathVariable String ticket_number, @Valid @RequestBody DamagedReturns damagedReturns) {

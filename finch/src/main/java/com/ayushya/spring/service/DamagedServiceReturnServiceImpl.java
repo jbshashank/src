@@ -98,59 +98,51 @@ public class DamagedServiceReturnServiceImpl implements DamagedReturnService {
 
 
 
+
 	@Override
 	public ResponseEntity<byte[]> addDamagedPartReturnImage(String ticket_number, DamagedReturns damagedReturns,
 			MultipartFile uploadfile) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-}
+		DamagedReturns damagedReturnsPresentitem = damagedReturnsRepository.findBy_id(ticket_number);
+		String name = uploadfile.getOriginalFilename();
+		Optional<GridFSDBFile> existing = maybeLoadFile(name);
+		GridFSFile gridFSFile= gridFsTemplate.store(uploadfile.getInputStream(), name, uploadfile.getContentType());	  
 
-//	@Override
-//	public ResponseEntity<byte[]> addDamagedPartReturnImage(String ticket_number, DamagedReturns damagedReturns,
-//			MultipartFile uploadfile) throws IOException {
-//		DamagedReturns damagedReturnsPresentitem = damagedReturnsRepository.findBy_id(ticket_number);
-//		String name = uploadfile.getOriginalFilename();
-//		Optional<GridFSDBFile> existing = maybeLoadFile(name);
-//		GridFSFile gridFSFile= gridFsTemplate.store(uploadfile.getInputStream(), name, uploadfile.getContentType());	  
-//
-//		damagedReturns.damagedReturnsItems.get(0).setGridDBFile(gridFSFile);
-//
-////		if (existing.isPresent()) {
-////			gridFsTemplate.delete(getFilenameQuery(name));
-////		}
-////		gridFsTemplate.store(uploadfile.getInputStream(), name, uploadfile.getContentType()).save();	  
-//		damagedReturns.set_id(ticket_number);
-//		
-//		if(damagedReturnsPresentitem==null) {
-//			DamagedReturns damagedReturnssaved= damagedReturnsRepository.save(damagedReturns);
-//			byte[] response = serialize(gridFSFile);
-//
-//			return new ResponseEntity<byte[]>(response, HttpStatus.OK); }
-//		else
-//		{
-//			damagedReturnsPresentitem.set_id(ticket_number);
-//			damagedReturnsPresentitem.damagedReturnsItems.addAll(damagedReturns.getDamagedReturnsItems());
-//			DamagedReturns damagedReturnssaved= damagedReturnsRepository.save(damagedReturnsPresentitem);
-//			byte[] response = serialize(damagedReturnssaved);
-//			return new ResponseEntity<byte[]>(response, HttpStatus.OK);
+		damagedReturns.damagedReturnsItems.get(0).setGridDBFile(gridFSFile);
+
+//		if (existing.isPresent()) {
+//			gridFsTemplate.delete(getFilenameQuery(name));
 //		}
-//	}
-//	private Optional<GridFSDBFile> maybeLoadFile(String name) {
-//		GridFSDBFile file = gridFsTemplate.findOne(getFilenameQuery(name));
-//		return Optional.ofNullable(file);
-//	}
-//	private static Query getFilenameQuery(String name) {
-//		return Query.query(GridFsCriteria.whereFilename().is(name));
-//	}
-//	
-//	  private static byte[] serialize(Object obj) throws IOException {
-//		    ByteArrayOutputStream os = new ByteArrayOutputStream();
-//		    ObjectMapper mapper = new ObjectMapper();
-//		    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-//		    mapper.enable(SerializationFeature.INDENT_OUTPUT);
-//		    mapper.writeValue(os, obj);
-//
-//		    return os.toByteArray();
-//		}
-//}
+//		gridFsTemplate.store(uploadfile.getInputStream(), name, uploadfile.getContentType()).save();	  
+		damagedReturns.set_id(ticket_number);
+		
+		if(damagedReturnsPresentitem==null) {
+			DamagedReturns damagedReturnssaved= damagedReturnsRepository.save(damagedReturns);
+			byte[] response = serialize(gridFSFile);
+
+			return new ResponseEntity<byte[]>(response, HttpStatus.OK); }
+		else
+		{
+			damagedReturnsPresentitem.set_id(ticket_number);
+			damagedReturnsPresentitem.damagedReturnsItems.addAll(damagedReturns.getDamagedReturnsItems());
+			DamagedReturns damagedReturnssaved= damagedReturnsRepository.save(damagedReturnsPresentitem);
+			byte[] response = serialize(damagedReturnssaved);
+			return new ResponseEntity<byte[]>(response, HttpStatus.OK);
+		}
+	}
+	private Optional<GridFSDBFile> maybeLoadFile(String name) {
+		GridFSDBFile file = gridFsTemplate.findOne(getFilenameQuery(name));
+		return Optional.ofNullable(file);
+	}
+	private static Query getFilenameQuery(String name) {
+		return Query.query(GridFsCriteria.whereFilename().is(name));
+	}
+	
+	  private static byte[] serialize(Object obj) throws IOException {
+		    ByteArrayOutputStream os = new ByteArrayOutputStream();
+		    ObjectMapper mapper = new ObjectMapper();
+		    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		    mapper.writeValue(os, obj);
+		    return os.toByteArray();
+		}
+}

@@ -21,6 +21,7 @@ public class Tickets {
 	public String state;
 	public String pin_code;
 	public String tech_name;
+	public String technicianUniqueId;
 	public String mobile_number_1;
 	public String mobile_number_2;
 	public String email_id;
@@ -46,7 +47,7 @@ public class Tickets {
 	}
 
 	public Tickets(String _id, String call_type, String name, String address_1, String address_2, String street,
-			String city, String state, String pin_code, String tech_name, String mobile_number_1,
+			String city, String state, String pin_code, String tech_name,String technicianUniqueId, String mobile_number_1,
 			String mobile_number_2, String email_id, String brand, String product_category,String product_sub_category, String model_name,
 			String serial_number, String iw, Date visit_time, String remarks,
 			String date_of_post, String invoice_number, String dealer_name, String ticket_status, String otherDamages) {
@@ -61,6 +62,7 @@ public class Tickets {
 		this.state = state;
 		this.pin_code = pin_code;
 		this.tech_name = tech_name;
+		this.technicianUniqueId = technicianUniqueId;
 		this.mobile_number_1 = mobile_number_1;
 		this.mobile_number_2 = mobile_number_2;
 		this.email_id = email_id;
@@ -157,6 +159,14 @@ public class Tickets {
 
 	public void setTech_name(String tech_name) {
 		this.tech_name = tech_name;
+	}
+
+	public String getTechnicianUniqueId() {
+		return technicianUniqueId;
+	}
+
+	public void setTechnicianUniqueId(String technicianUniqueId) {
+		this.technicianUniqueId = technicianUniqueId;
 	}
 
 	public String getMobile_number_1() {

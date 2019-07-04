@@ -10,10 +10,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,9 +54,18 @@ public class TicketsController
 	private TicketService ticketService;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public Iterable<Tickets> getAllTickets(Pageable pageable)
+	public ResponseEntity<Iterable<Tickets>> getAllTickets(HttpServletRequest request, HttpServletResponse response,Pageable pageable)
 	{
-		return repository.findAll(pageable);
+		String user = request.getHeader("user");
+		Iterable<Tickets> t =repository.findTicketsByUser(user,pageable);
+		return ResponseEntity.accepted().body(t);
+	}
+	
+	@RequestMapping(value = "/open", method = RequestMethod.GET)
+	public ResponseEntity<Iterable<Tickets>> getAllTicketsByStatus(HttpServletRequest request, HttpServletResponse response,Pageable pageable,@RequestParam("user") String user)
+	{
+		Iterable<Tickets> t =repository.findTicketsByUserAndTicketStatus(user,"open",pageable);
+		return ResponseEntity.accepted().body(t);
 	}
 
 	@RequestMapping(value = "/all", method = RequestMethod.GET)
@@ -124,9 +136,11 @@ public class TicketsController
 	{
 		tick.set_id(nextSequenceService.getNextSequence("customSequences",
 				new SimpleDateFormat("ddMMyy").format(new Date())));
-		tick.setTicket_status("created");
+		tick.setTicket_status("reported");
 		tick.setDate_of_post(new SimpleDateFormat("ddMMyyhhmmss").format(new Date()));
-		tick.setTech_name(ticketService.getEmployeeData(tick));
+		tick.setTech_name(ticketService.getEmployeeData(tick).getSeName());
+		tick.setTechnicianUniqueId(ticketService.getEmployeeData(tick).getSeUniqueId()); 
+		if(tick.getTech_name()!=null)tick.setTicket_status("open");
 		repository.save(tick);
 		return tick;
 	}
