@@ -1,5 +1,6 @@
 package com.ayushya.spring.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,8 @@ public class FeedbackController {
 	private FeedbackRepository repository;
 	
 	@RequestMapping(value = "/", method = RequestMethod.POST)
-	public Feedback createFeedback(@Valid @RequestBody Feedback feedback) {
+	public Feedback createFeedback(@Valid @RequestBody Feedback feedback, HttpServletRequest httpServletRequest) {
+		System.out.println(" HEADER IN FEEDBACK <<USERFEEDBACK>>"+httpServletRequest.getParameter("x-userid")+":::"+httpServletRequest.getParameter("x-ticketnumber")+"::::"+httpServletRequest.getParameter("x-accountid"));
 		return repository.save(feedback);
 	}
 	

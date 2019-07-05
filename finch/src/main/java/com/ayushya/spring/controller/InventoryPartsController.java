@@ -1,5 +1,6 @@
 package com.ayushya.spring.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ayushya.spring.bean.InventoryAccessories;
@@ -39,20 +41,26 @@ public class InventoryPartsController {
 	}
 	
 	@RequestMapping(value = "/request", method = RequestMethod.POST)
-	public InventoryParts requestNewItem(@Valid @RequestBody InventoryParts inventoryParts) {
+	public InventoryParts requestNewItem(@Valid @RequestBody InventoryParts inventoryParts,@RequestParam("type") String requestType,HttpServletRequest httpServletRequest) {
+		InventoryParts inventoryParts1 = null;
+		System.out.println(" REQUEST TYPE IS HERERERERERERERE "+requestType+":"+httpServletRequest.getParameter("x-ticketnumber")+":"+httpServletRequest.getParameter("x-accountid")+":::"+httpServletRequest.getParameter("x-userid"));
 		inventoryParts.set_id(nextSequenceService.getNextSequence("customSequences_parts"));
 		inventoryParts.setStatus("Requested");
+		inventoryParts1 = inventoryPartService.requestNewPart(inventoryParts);
+		System.out.println(" REQUEST TYPE IS <<PARTS>> "+inventoryParts1.getBrand());
 		return inventoryPartService.requestNewPart(inventoryParts);
 	}
 	
 	
 	@RequestMapping(value = "/{brand}/{category}/{sub_category}/{model}", method = RequestMethod.GET)
 	public Iterable<InventoryParts> fetchParts(@PathVariable String brand,@PathVariable String category,@PathVariable String sub_category,@PathVariable String model) {
+		System.out.println(" THE VALUES ARE :"+brand+":"+category+"::"+sub_category+":::"+model);
 		return inventoryPartService.fetchMatchingParts(brand,category,sub_category,model);
 	}
 	
 	@RequestMapping(value = "/{brand}/{category}/{model}", method = RequestMethod.GET)
 	public Iterable<InventoryParts> fetchPartsWithoutSubCategory(@PathVariable String brand,@PathVariable String category,@PathVariable String model) {
+		System.out.println(" THE VALUES ARE << WITH SUB >>:"+brand+":"+category+"::"+":::"+model);
 		return inventoryPartService.fetchMatchingPartsWithoutSubCategory(brand, category, model);
 	}
 	

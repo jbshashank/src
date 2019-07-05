@@ -47,12 +47,14 @@ public class SMSTicketLoggedFormatter implements IMessageFormatter{
 			System.out.println(" THE MESSSSSSSSSSSSSSSSSSSSSSSSSSSSS <<<<2222222222>>>"+formattedMessage);
 		}
 		if(messageProperties.containsKey("$OTP")) {
-			formattedMessage = formattedMessage.replaceAll("#serviceEngineer", ""+messageProperties.get("$OTP"));
+			formattedMessage = formattedMessage.replaceAll("#OTP", ""+messageProperties.get("$OTP"));
 		}
 		if(messageProperties.containsKey("$Customer")) {
-			formattedMessage = formattedMessage.replaceAll("#serviceEngineer", ""+messageProperties.get("$Customer"));
+			formattedMessage = formattedMessage.replaceAll("#Customer", ""+messageProperties.get("$Customer"));
 		}
 		messageProperties.put("MESSAGE",""+formattedMessage);
+		System.out.println(" messageProperties << messageProperties >> "+messageProperties);
+		System.out.println(" OTP SEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE NT IS =========> "+formattedMessage);
 		return "SUCCESS";
 	}
 

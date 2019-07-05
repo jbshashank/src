@@ -73,7 +73,7 @@ public class TwilioEmailChannelClient implements INotificationChannel{
 			transport = mailSession.getTransport("smtp");
 	
 			transport.connect(host, fromAddress, password);
-			transport.sendMessage(emailMessage, emailMessage.getAllRecipients());
+		//	transport.sendMessage(emailMessage, emailMessage.getAllRecipients());
 			transport.close();
 		}catch(Exception e) {
 			e.printStackTrace();

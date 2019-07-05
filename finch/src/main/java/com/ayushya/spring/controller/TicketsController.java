@@ -56,8 +56,12 @@ public class TicketsController
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public ResponseEntity<Iterable<Tickets>> getAllTickets(HttpServletRequest request, HttpServletResponse response,Pageable pageable)
 	{
-		String user = request.getHeader("user");
+		System.out.println(" REached Service");
+		String user = request.getHeader("x-userid");
+		//user="dvsnkumar72@gmail.com";
+		System.out.println(" REached Service <<user >> "+user);
 		Iterable<Tickets> t =repository.findTicketsByUser(user,pageable);
+		
 		return ResponseEntity.accepted().body(t);
 	}
 	
@@ -138,9 +142,12 @@ public class TicketsController
 				new SimpleDateFormat("ddMMyy").format(new Date())));
 		tick.setTicket_status("reported");
 		tick.setDate_of_post(new SimpleDateFormat("ddMMyyhhmmss").format(new Date()));
-		tick.setTech_name(ticketService.getEmployeeData(tick).getSeName());
-		tick.setTechnicianUniqueId(ticketService.getEmployeeData(tick).getSeUniqueId()); 
+		Technician technician = ticketService.getEmployeeData(tick);
+		if(technician!=null) {
+		tick.setTech_name(technician.getSeName());
+		tick.setTechnicianUniqueId(technician.getSeUniqueId()); 
 		if(tick.getTech_name()!=null)tick.setTicket_status("open");
+		}
 		repository.save(tick);
 		return tick;
 	}

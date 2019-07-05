@@ -23,9 +23,9 @@ public interface TicketsRepository extends MongoRepository<Tickets, String>{
 	@Query("{visit_date : {$lte : ?0 }}")
 	Page<Tickets> findTicketsByVisit_date(Date visit_Date,Pageable p);
 	
-	@Query("{technicianUniqueId : ?0 , ticket_status: { $nin: [\"closed\"] }}")
+	@Query("{email_id : ?0 , ticket_status: { $nin: [\"closed\"] }}")
 	Page<Tickets> findTicketsByUser(String user,Pageable p);
-	@Query("{technicianUniqueId : ?0 , ticket_status : ?1}")
+	@Query("{email_id : ?0 , ticket_status : ?1}")
 	Page<Tickets> findTicketsByUserAndTicketStatus(String user,String Status,Pageable p);
 }
 

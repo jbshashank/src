@@ -1,5 +1,7 @@
 package com.ayushya.spring.service;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -8,11 +10,13 @@ import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.ayushya.spring.bean.Technician;
 import com.ayushya.spring.bean.Tickets;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,6 +31,8 @@ public class ExcelService {
 	public String ticketNumber;
 	public boolean flag = true;
 	public int localTickNum;
+	@Autowired
+	TicketService ticketService;
 	@Autowired
 	private NextSequenceService nextSequenceService;
 //    /**
@@ -94,54 +100,90 @@ public class ExcelService {
         while (iterator.hasNext())
         {
             Row currentRow = iterator.next();  
-            System.out.println(currentRow.getCell(0).getStringCellValue());
             // skip heading row.
             if (currentRow.getRowNum() == 0) {
                 continue;
             }
-            Double val = (currentRow.getCell(7).getNumericCellValue());
-            String val1 = String.format("%.0f", val);
-            System.out.println(val1);
+
 
     // mapped to example object.
     Tickets ticketDTO = new Tickets();
 //    ticketDTO.setTicketId(currentRow.getCell(0).getStringCellValue());
-    
+    if(getCellValueAsString(currentRow.getCell(0))!=null) {
 	ticketDTO.set_id(nextSequenceService.getNextSequence("customSequences",new SimpleDateFormat("ddMMyy").format(new Date())));
-	ticketDTO.setCall_type(currentRow.getCell(0).getStringCellValue());
-	ticketDTO.setName(currentRow.getCell(1).getStringCellValue());
-	ticketDTO.setAddress_1(currentRow.getCell(2).getStringCellValue());
-	ticketDTO.setAddress_2(currentRow.getCell(3).getStringCellValue());
-	ticketDTO.setStreet(currentRow.getCell(4).getStringCellValue());
-	ticketDTO.setCity(currentRow.getCell(5).getStringCellValue());
-	ticketDTO.setState(currentRow.getCell(6).getStringCellValue());
-	ticketDTO.setPin_code(String.format("%.0f", currentRow.getCell(7).getNumericCellValue()));
-	ticketDTO.setTech_name(null);
-	ticketDTO.setMobile_number_1(String.format("%.0f",currentRow.getCell(9).getNumericCellValue()));
-	ticketDTO.setMobile_number_2(String.format("%.0f",currentRow.getCell(10).getNumericCellValue()));
-	ticketDTO.setEmail_id(currentRow.getCell(11).getStringCellValue());
-	ticketDTO.setBrand(currentRow.getCell(12).getStringCellValue());
-	ticketDTO.setProduct_category(currentRow.getCell(13).getStringCellValue());
-	ticketDTO.setModel_name(currentRow.getCell(14).getStringCellValue());
-	ticketDTO.setSerial_number(currentRow.getCell(15).getStringCellValue());
-	ticketDTO.setIw(currentRow.getCell(16).getStringCellValue());
-	String visitDate = currentRow.getCell(17).getStringCellValue();
-	String visitTime =currentRow.getCell(18).getStringCellValue();
+	ticketDTO.setCall_type(getCellValueAsString(currentRow.getCell(1)));
+	ticketDTO.setName(getCellValueAsString(currentRow.getCell(2)));
+	ticketDTO.setAddress_1(getCellValueAsString(currentRow.getCell(3)));
+	ticketDTO.setAddress_2(getCellValueAsString(currentRow.getCell(4)));
+	ticketDTO.setStreet(getCellValueAsString(currentRow.getCell(5)));
+	ticketDTO.setCity(getCellValueAsString(currentRow.getCell(6)));
+	ticketDTO.setState(getCellValueAsString(currentRow.getCell(7)));
+	ticketDTO.setPin_code(getCellValueAsString(currentRow.getCell(8)));
+	ticketDTO.setTicket_status("reported");
+	Technician technician = ticketService.getEmployeeData(ticketDTO);
+	if(technician!=null) {
+	ticketDTO.setTech_name(technician.getSeName());
+	ticketDTO.setTechnicianUniqueId(technician.getSeUniqueId());
+	if(ticketDTO.getTech_name()!=null)ticketDTO.setTicket_status("open");
+	}
+	
+	ticketDTO.setMobile_number_1(getCellValueAsString(currentRow.getCell(9)));
+	ticketDTO.setMobile_number_2(getCellValueAsString(currentRow.getCell(10)));
+	ticketDTO.setEmail_id(getCellValueAsString(currentRow.getCell(11)));
+	ticketDTO.setBrand(getCellValueAsString(currentRow.getCell(12)));
+	ticketDTO.setProduct_category(getCellValueAsString(currentRow.getCell(13)));
+	ticketDTO.setModel_name(getCellValueAsString(currentRow.getCell(14)));
+	ticketDTO.setSerial_number(getCellValueAsString(currentRow.getCell(15)));
+	ticketDTO.setIw(getCellValueAsString(currentRow.getCell(16)));
+	String visitDate = getCellValueAsString(currentRow.getCell(17));
+//	DateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+//	String strDate = dateFormat.format(visitDate1);
+	String visitTime = getCellValueAsString(currentRow.getCell(18));
 //	visitDate = "12-12-2019";
-//	visitTime = "10:05 AM";
+//	visitTime = "1005AM";
 	// Conversion
-	Date sourceDate = new SimpleDateFormat("dd/MM/yy:hh:mm a").parse(visitDate+":"+visitTime);
+	Date sourceDate = new SimpleDateFormat("dd.MM.yy:HHmm").parse(visitDate+":"+visitTime.substring(0,4));
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	sdf.setTimeZone(TimeZone.getTimeZone("IST"));
 	ticketDTO.setVisit_time(sourceDate);
-	ticketDTO.setRemarks(currentRow.getCell(19).getStringCellValue());
+	ticketDTO.setRemarks(getCellValueAsString(currentRow.getCell(19)));
 	ticketDTO.setDate_of_post(new SimpleDateFormat("ddMMyyhhmmss").format(new Date()));
-	ticketDTO.setDealer_name(currentRow.getCell(22).getStringCellValue());
+	ticketDTO.setDealer_name(getCellValueAsString(currentRow.getCell(22)));
 	ticketDTO.setTicket_status("Open");
 
             ticketDTOList.add(ticketDTO);
-        }
+    }}
         return ticketDTOList;
+    }
+    
+    public static String getCellValueAsString(Cell cell) {
+        String strCellValue = null;
+        if (cell != null) {
+            switch (cell.getCellType()) {
+            case Cell.CELL_TYPE_STRING:
+                strCellValue = cell.toString();
+                break;
+            case Cell.CELL_TYPE_NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(
+                            "dd.MM.yy");
+                    strCellValue = dateFormat.format(cell.getDateCellValue());
+                } else {
+                    Double value = cell.getNumericCellValue();
+                    Long longValue = value.longValue();
+                    strCellValue = new String(longValue.toString());
+                }
+                break;
+            case Cell.CELL_TYPE_BOOLEAN:
+                strCellValue = new String(new Boolean(
+                        cell.getBooleanCellValue()).toString());
+                break;
+            case Cell.CELL_TYPE_BLANK:
+                strCellValue = null;
+                break;
+            }
+        }
+        return strCellValue;
     }
 
 

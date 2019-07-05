@@ -36,13 +36,16 @@ public class TwilioSMSChannelClient implements INotificationChannel{
 	 * send
 	 */
 	public String sendNotification(HashMap hashMapMessageProperties) throws NotificationOperationException{	
-		Twilio.init(accountSID,accountTocken);
+		//Twilio.init(accountSID,accountTocken);
 		
-		 Message message = Message.creator(new PhoneNumber("+"+hashMapMessageProperties.get("TO")),
+		/* Message message = Message.creator(new PhoneNumber("+"+hashMapMessageProperties.get("TO")),
 				    new PhoneNumber("+"+from), ""+hashMapMessageProperties.get("MESSAGE")).create();
-
-		System.out.println(message.getSid());
-		System.out.println(" mESSAGE SENT "+hashMapMessageProperties.get("MESSAGE"));
+				    */
+		//String str = "Please provide the OTO to service engineer ";
+		//Message message = Message.creator(new PhoneNumber("+918904173832"),
+		//	    new PhoneNumber("+"+from), ""+hashMapMessageProperties.get("MESSAGE")).create();
+	//	System.out.println(message.getSid());
+		//System.out.println(" mESSAGE SENT "+hashMapMessageProperties.get("MESSAGE"));
 		return "SUCCESS";
 	}
 

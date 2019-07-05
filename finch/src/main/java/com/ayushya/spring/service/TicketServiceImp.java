@@ -36,7 +36,7 @@ public class TicketServiceImp implements TicketService {
 	@Autowired
 	OTPService oTPService;
 	
-	@Override
+
 	public void createTicket(List<Tickets> ticket) {
 		// TODO Auto-generated method stub
 		ticketRepository.save(ticket);
@@ -76,7 +76,7 @@ public class TicketServiceImp implements TicketService {
 		return technicianRepository.findAll(); 
 	}
 
-	@Override
+	
 	public Tickets updateTicketStatus(String ticket_id,String status) {
 		Tickets t = ticketRepository.findOne(ticket_id);
 		if(t!=null)
@@ -98,7 +98,7 @@ public class TicketServiceImp implements TicketService {
 	}
 	
 	
-	@Override
+	
 	public Tickets updateTicket(String ticket_id,Tickets t) {
 		Tickets ticket = ticketRepository.findOne(ticket_id);
 		ticket.set_id(ticket_id);
@@ -149,7 +149,7 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
         	hashMapMessageProps.put("$Customer", t.getName());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
-    		//notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketcreated");
+    		notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketcreated");
 
     		hashMapEmailProps.put("TO", t.getEmail_id());
     		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
@@ -165,7 +165,7 @@ private void sendNotifications(Tickets t,String status) throws NotificationOpera
         	hashMapMessageProps.put("$Customer", t.getName());
     		hashMapMessageProps.put("$serviceRequest", "GREETINGS FROM AUSHA");
     		hashMapMessageProps.put("$serviceEngineer", t.getTech_name());
-    		//notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketcreated");
+    		notificationSender.notify(hashMapMessageProps, "sms", "smsTicketLoggedFormatter_ticketcreated");
 
     		hashMapEmailProps.put("TO", t.getEmail_id());
     		hashMapEmailProps.put("$serviceRequest", "GREETINGS FROM AUSHA");

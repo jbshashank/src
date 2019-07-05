@@ -37,7 +37,10 @@ public class OTPController {
 	
 	@GetMapping(value = "/{ticket_number}/{OTP}/{EVENT}")
 	public String getDamagedReturnsList(@PathVariable String ticket_number,@PathVariable String OTP,@PathVariable String EVENT) {
-		return oTPService.validateOTP(ticket_number, OTP, EVENT);
+		System.out.println(" THE OTP IS <<OTP>> : "+OTP+":"+ticket_number+"::::"+EVENT);
+		String str = oTPService.validateOTP(ticket_number, OTP, EVENT);
+		System.out.println(" THE OTP IS <<STATUS : >> : "+str);
+		return str;
 	}
 	
 }

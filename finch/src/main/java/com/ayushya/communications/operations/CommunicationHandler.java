@@ -42,6 +42,7 @@ public class CommunicationHandler {
 	public void sendMessage(HashMap messageProperties, String notificationType,String eventType) throws NotificationOperationException{
 		
 		if(notificationHandlerRegistry.containsKey(notificationType)) {
+			System.out.println(" MESSAGE PROPERTIES TO AYUSHA "+messageProperties);
 			System.out.println(" THE MESSAGE IS "+eventType+"::::: "+notificationHandlerRegistry);
 			iNotificationHandler = (INotificationHandler)notificationHandlerRegistry.get(notificationType);
 			System.out.println(" THE MESSAGE IS <<iNotificationHandler>>"+iNotificationHandler);

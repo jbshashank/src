@@ -12,12 +12,15 @@ public class OTPDetails {
 		return OTP;
 	}
 	public void setOTP(String oTP) {
+		System.out.println(" OTP GENERATED IS "+oTP);
 		OTP = oTP;
 	}
 	public String getOTPEventType() {
+		
 		return OTPEventType;
 	}
 	public void setOTPEventType(String oTPEventType) {
+		System.out.println(" OTP EVENT  IS "+oTPEventType);
 		OTPEventType = oTPEventType;
 	}
 	public Date getOTPExpiry() {

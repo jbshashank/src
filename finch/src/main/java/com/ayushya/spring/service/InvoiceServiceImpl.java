@@ -1,58 +1,37 @@
 package com.ayushya.spring.service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.ayushya.spring.bean.PurchasedItems;
-import com.ayushya.spring.repository.PurchasedItemsRepository;
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Chunk;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.Font.FontFamily;
-import com.itextpdf.text.List;
-import com.itextpdf.text.ListItem;
-import com.itextpdf.text.PageSize;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.LineSeparator;
-import com.mongodb.BasicDBObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 //import org.json.JSONArray;
 //import org.json.JSONException;
 //import org.json.JSONObject;
+
+import com.ayushya.spring.bean.Invoice;
+import com.ayushya.spring.repository.PurchasedItemsRepository;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.List;
+import com.itextpdf.text.ListItem;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.LineSeparator;
+import com.mongodb.BasicDBObject;
 
 
 
@@ -371,6 +350,14 @@ public class InvoiceServiceImpl implements InvoiceService {
 		
 		return "correct";
 	}
+
+	@Override
+	public String saveConsumedParts(String ticket_id,Invoice purchasedItems, HttpServletRequest httpServletRequest,
+			HttpServletResponse httpServletResponse) {
+		purchasedItems.set_id(ticket_id);
+		purchasedItemsRepository.save(purchasedItems);
+		return "success";
+	}
 	
 //	public static void process(Document document, JSONObject json) throws JSONException, DocumentException {
 //		for (String k : json.keySet()) {
@@ -425,5 +412,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 //		
 //		return file;
 //	}
+	
+	
+	
 	
 }
